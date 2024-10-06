@@ -1,324 +1,201 @@
 "use client";
 
 import {
-    MoveVerticalIcon
-} from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import {
-    DropdownMenu, DropdownMenuContent,
-    DropdownMenuItem, DropdownMenuTrigger
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { HandshakeIcon, ListIcon, Loader2, PlusIcon } from "lucide-react";
+import { DropdownMenuLabel } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import useFirebaseUser from "@/hooks/firebase/use-firebase-user";
+import useLogout from "@/hooks/firebase/use-logout";
+export default function DashboardPage() {
+    const { user } = useFirebaseUser();
+    const { logout, loading } = useLogout();
+    return (
+        <div className="flex flex-col min-h-screen ">
+            <header className="px-4 lg:px-6 h-14 flex items-center border-b-[1px] ">
+                <Link
+                    href="#"
+                    className="flex items-center justify-center space-x-2"
+                    prefetch={false}
+                >
+                    <HandshakeIcon className="h-6 w-6 hover:animate-bounce" />
+                    <span className="text-2xl font-black">Partilha</span>
+                </Link>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-full ml-auto w-8 h-8 items-center overflow-hidden "
+                        >
+                            <Avatar>
+                                <AvatarImage
+                                    src={user?.photoURL as string}
+                                    alt={user?.displayName as string}
+                                    className="w-8 h-8 m-auto"
+                                />
+                                <AvatarFallback>
+                                    {user?.displayName}
+                                </AvatarFallback>
+                            </Avatar>
+                            <span className="sr-only">Toggle user menu</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>Perfil</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => logout()}>
+                            <Button
+                                className="w-full h-8 "
+                                variant={"destructive"}
+                            >
+                                {loading && (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                )}
+                                <span>{loading ? "Cerrando..." : "Sair"}</span>
+                            </Button>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </header>
 
-export const description =
-  "An orders dashboard with a sidebar navigation. The sidebar has icon navigation. The content area has a breadcrumb and search in the header. The main area has a list of recent orders with a filter and export button. The main area also has a detailed view of a single order with order details, shipping information, billing information, customer information, and payment information.";
+            <div className="flex flex-1">
+                <aside className="hidden sm:block w-64 p-4  ">
+                    <nav className="space-y-1">
+                        <Link
+                            href="#"
+                            className=" flex flex-row items-center font-bold"
+                            prefetch={false}
+                        >
+                            <ListIcon className="mr-2 h-4 w-4 " color="black" />
+                            Todas as despesas
+                        </Link>
 
-export default function Dashboard() {
-  return (
-    <main className="p-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Balance</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold">$1,234.56</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Accounts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold">12</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Groups</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold">5</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Friends</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold">124</div>
-          </CardContent>
-        </Card>
-      </div>
-      <Tabs defaultValue="transactions" className="mt-6">
-        <TabsList>
-          <TabsTrigger value="transactions">Transactions</TabsTrigger>
-          <TabsTrigger value="groups">Groups</TabsTrigger>
-          <TabsTrigger value="friends">Friends</TabsTrigger>
-        </TabsList>
-        <TabsContent value="transactions">
-          <Card>
-            <CardHeader>
-              <CardTitle>Transactions</CardTitle>
-              <CardDescription>Manage your transactions here.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Account</TableHead>
-                    <TableHead>Group</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>2023-04-15</TableCell>
-                    <TableCell>Groceries</TableCell>
-                    <TableCell>$50.00</TableCell>
-                    <TableCell>Personal</TableCell>
-                    <TableCell>Roommates</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoveVerticalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>2023-04-20</TableCell>
-                    <TableCell>Rent</TableCell>
-                    <TableCell>$1,000.00</TableCell>
-                    <TableCell>Shared Expenses</TableCell>
-                    <TableCell>Roommates</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoveVerticalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>2023-04-25</TableCell>
-                    <TableCell>Vacation Expenses</TableCell>
-                    <TableCell>$500.00</TableCell>
-                    <TableCell>Savings</TableCell>
-                    <TableCell>Vacation</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoveVerticalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-            <CardFooter>
-              <Button>Add Transaction</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-        <TabsContent value="groups">
-          <Card>
-            <CardHeader>
-              <CardTitle>Groups</CardTitle>
-              <CardDescription>Manage your groups here.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Members</TableHead>
-                    <TableHead>Balance</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>Roommates</TableCell>
-                    <TableCell>4</TableCell>
-                    <TableCell>$150.00</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoveVerticalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Vacation</TableCell>
-                    <TableCell>6</TableCell>
-                    <TableCell>$1,200.00</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoveVerticalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Utilities</TableCell>
-                    <TableCell>3</TableCell>
-                    <TableCell>$75.00</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoveVerticalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-            <CardFooter>
-              <Button>Add Group</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-        <TabsContent value="friends">
-          <Card>
-            <CardHeader>
-              <CardTitle>Friends</CardTitle>
-              <CardDescription>Manage your friends here.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Balance</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>John Doe</TableCell>
-                    <TableCell>john@example.com</TableCell>
-                    <TableCell>$50.00</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoveVerticalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Jane Smith</TableCell>
-                    <TableCell>jane@example.com</TableCell>
-                    <TableCell>$75.00</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoveVerticalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Bob Johnson</TableCell>
-                    <TableCell>bob@example.com</TableCell>
-                    <TableCell>$25.00</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoveVerticalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-            <CardFooter>
-              <Button>Add Friend</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </main>
-  );
+                        <div className="mt-4">
+                            <div className="flex items-center justify-between hover:cursor-pointer">
+                                <h2 className="font-semibold  ">Grupos</h2>
+                                <div className="flex items-center space-x-1">
+                                    <PlusIcon
+                                        className="h-4 w-4 "
+                                        color="black"
+                                    />
+                                    <span className="text-sm">Adicionar</span>
+                                </div>
+                            </div>
+                            <div className="px-2">
+                                <Link
+                                    href="#"
+                                    className="block"
+                                    prefetch={false}
+                                >
+                                    Simpa 2024
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="mt-4">
+                            <div className="flex items-center justify-between hover:cursor-pointer">
+                                <h2 className="font-semibold  ">Amigos</h2>
+                                <div className="flex items-center space-x-1">
+                                    <PlusIcon
+                                        className="h-4 w-4 "
+                                        color="black"
+                                    />
+                                    <span className="text-sm">Adicionar</span>
+                                </div>
+                            </div>
+                            <div className="px-2">
+                                <Link
+                                    href="#"
+                                    className="block"
+                                    prefetch={false}
+                                >
+                                    Emerson
+                                </Link>
+                            </div>
+                        </div>
+                    </nav>
+                </aside>
+                <main className="flex-1 p-6 ">
+                    <header className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold">
+                            Todas as despesas
+                        </h2>
+                        <div className="flex items-center space-x-2">
+                            <Button>Adicionar despesa</Button>
+                            <Button variant="secondary">Quitar contas</Button>
+                        </div>
+                    </header>
+                    <section>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center border-b pb-2">
+                                <div className="flex items-center space-x-2">
+                                    <span className="font-medium">SET</span>
+                                    <span className="font-bold">24</span>
+                                    <span className="text-sm text-muted-foreground">
+                                        Agiotagem e outros pecados...
+                                    </span>
+                                </div>
+                                <div className="text-right">
+                                    <span className="block font-medium">
+                                        BRL1000.00
+                                    </span>
+                                    <span className="text-sm text-muted-foreground">
+                                        Emerson S. pagou
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center border-b pb-2">
+                                <div className="flex items-center space-x-2">
+                                    <span className="font-medium">SET</span>
+                                    <span className="font-bold">22</span>
+                                    <span className="text-sm text-muted-foreground">
+                                        Uber casa
+                                    </span>
+                                </div>
+                                <div className="text-right">
+                                    <span className="block font-medium">
+                                        BRL30.00
+                                    </span>
+                                    <span className="text-sm text-muted-foreground">
+                                        Emerson S. pagou
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+                <aside className="w-64 p-4 hidden sm:block">
+                    <div className="mb-4">
+                        <h2 className="text-lg font-bold">Seu saldo total</h2>
+                        <p className="text-3xl font-bold text-primary">
+                            devem a você BRL261.18
+                        </p>
+                    </div>
+                </aside>
+            </div>
+            <footer className="border-t-[1px] p-4 flex justify-between items-center">
+                <div>&copy; 2024 Partilha. All rights reserved.</div>
+                <nav className="flex gap-4">
+                    <Link href="#" className="hover:underline" prefetch={false}>
+                        Privacy
+                    </Link>
+                    <Link href="#" className="hover:underline" prefetch={false}>
+                        Terms
+                    </Link>
+                    <Link href="#" className="hover:underline" prefetch={false}>
+                        Contact
+                    </Link>
+                </nav>
+            </footer>
+        </div>
+    );
 }
