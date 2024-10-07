@@ -1,201 +1,235 @@
 "use client";
 
+import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     DropdownMenu,
-    DropdownMenuTrigger,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuLabel,
     DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { HandshakeIcon, ListIcon, Loader2, PlusIcon } from "lucide-react";
-import { DropdownMenuLabel } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+    ChevronRight,
+    HandshakeIcon,
+    LogOut,
+    PlusCircle,
+    Settings,
+    User,
+} from "lucide-react";
 import useFirebaseUser from "@/hooks/firebase/use-firebase-user";
 import useLogout from "@/hooks/firebase/use-logout";
-export default function DashboardPage() {
+import Link from "next/link";
+
+export default function Dashboard() {
     const { user } = useFirebaseUser();
     const { logout, loading } = useLogout();
+    const [totalBalance, setTotalBalance] = useState(150.75);
+    const [groups, setGroups] = useState([
+        { id: 1, name: "Apartamento", balance: 75.5, members: 3 },
+        { id: 2, name: "Viagem de Férias", balance: -25.0, members: 5 },
+        { id: 3, name: "Jantar de Sexta", balance: 35.25, members: 4 },
+    ]);
+    const [contacts, setContacts] = useState([
+        { id: 1, name: "Ana Silva", balance: 50.0 },
+        { id: 2, name: "Carlos Oliveira", balance: -30.5 },
+        { id: 3, name: "Mariana Santos", balance: 20.25 },
+    ]);
+
     return (
-        <div className="flex flex-col min-h-screen ">
-            <header className="px-4 lg:px-6 h-14 flex items-center border-b-[1px] ">
-                <Link
-                    href="#"
-                    className="flex items-center justify-center space-x-2"
-                    prefetch={false}
-                >
-                    <HandshakeIcon className="h-6 w-6 hover:animate-bounce" />
-                    <span className="text-2xl font-black">Partilha</span>
-                </Link>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="rounded-full ml-auto w-8 h-8 items-center overflow-hidden "
-                        >
-                            <Avatar>
-                                <AvatarImage
-                                    src={user?.photoURL as string}
-                                    alt={user?.displayName as string}
-                                    className="w-8 h-8 m-auto"
-                                />
-                                <AvatarFallback>
-                                    {user?.displayName}
-                                </AvatarFallback>
-                            </Avatar>
-                            <span className="sr-only">Toggle user menu</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Perfil</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => logout()}>
+        <div className="min-h-screen bg-gray-50">
+            <header className="bg-white shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                    <Link
+                        href="#"
+                        className="flex items-center justify-center space-x-2"
+                        prefetch={false}
+                    >
+                        <HandshakeIcon className="h-6 w-6 hover:animate-bounce" />
+                        <span className="text-2xl font-black">Partilha</span>
+                    </Link>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                             <Button
-                                className="w-full h-8 "
-                                variant={"destructive"}
+                                variant="ghost"
+                                className="relative h-8 w-8 rounded-full"
                             >
-                                {loading && (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                )}
-                                <span>{loading ? "Cerrando..." : "Sair"}</span>
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage
+                                        src={
+                                            user?.photoURL ||
+                                            "/placeholder-user.jpg"
+                                        }
+                                        alt="@user"
+                                    />
+                                    <AvatarFallback>U</AvatarFallback>
+                                </Avatar>
                             </Button>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            className="w-56"
+                            align="end"
+                            forceMount
+                        >
+                            <DropdownMenuLabel className="font-normal">
+                                <div className="flex flex-col space-y-1">
+                                    <p className="text-sm font-medium leading-none">
+                                        {user?.displayName}
+                                    </p>
+                                    <p className="text-xs leading-none text-muted-foreground">
+                                        {user?.email}
+                                    </p>
+                                </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>
+                                <User className="mr-2 h-4 w-4" />
+                                <span>Perfil</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <Settings className="mr-2 h-4 w-4" />
+                                <span>Configurações</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => logout()}
+                            >
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span>Sair</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </header>
 
-            <div className="flex flex-1">
-                <aside className="hidden sm:block w-64 p-4  ">
-                    <nav className="space-y-1">
-                        <Link
-                            href="#"
-                            className=" flex flex-row items-center font-bold"
-                            prefetch={false}
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <Card className="mb-8">
+                    <CardHeader>
+                        <CardTitle>Saldo Total</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p
+                            className={`text-4xl font-bold ${
+                                totalBalance >= 0
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                            }`}
                         >
-                            <ListIcon className="mr-2 h-4 w-4 " color="black" />
-                            Todas as despesas
-                        </Link>
-
-                        <div className="mt-4">
-                            <div className="flex items-center justify-between hover:cursor-pointer">
-                                <h2 className="font-semibold  ">Grupos</h2>
-                                <div className="flex items-center space-x-1">
-                                    <PlusIcon
-                                        className="h-4 w-4 "
-                                        color="black"
-                                    />
-                                    <span className="text-sm">Adicionar</span>
-                                </div>
-                            </div>
-                            <div className="px-2">
-                                <Link
-                                    href="#"
-                                    className="block"
-                                    prefetch={false}
-                                >
-                                    Simpa 2024
-                                </Link>
-                            </div>
-                        </div>
-                        <div className="mt-4">
-                            <div className="flex items-center justify-between hover:cursor-pointer">
-                                <h2 className="font-semibold  ">Amigos</h2>
-                                <div className="flex items-center space-x-1">
-                                    <PlusIcon
-                                        className="h-4 w-4 "
-                                        color="black"
-                                    />
-                                    <span className="text-sm">Adicionar</span>
-                                </div>
-                            </div>
-                            <div className="px-2">
-                                <Link
-                                    href="#"
-                                    className="block"
-                                    prefetch={false}
-                                >
-                                    Emerson
-                                </Link>
-                            </div>
-                        </div>
-                    </nav>
-                </aside>
-                <main className="flex-1 p-6 ">
-                    <header className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-bold">
-                            Todas as despesas
-                        </h2>
-                        <div className="flex items-center space-x-2">
-                            <Button>Adicionar despesa</Button>
-                            <Button variant="secondary">Quitar contas</Button>
-                        </div>
-                    </header>
-                    <section>
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center border-b pb-2">
-                                <div className="flex items-center space-x-2">
-                                    <span className="font-medium">SET</span>
-                                    <span className="font-bold">24</span>
-                                    <span className="text-sm text-muted-foreground">
-                                        Agiotagem e outros pecados...
-                                    </span>
-                                </div>
-                                <div className="text-right">
-                                    <span className="block font-medium">
-                                        BRL1000.00
-                                    </span>
-                                    <span className="text-sm text-muted-foreground">
-                                        Emerson S. pagou
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="flex justify-between items-center border-b pb-2">
-                                <div className="flex items-center space-x-2">
-                                    <span className="font-medium">SET</span>
-                                    <span className="font-bold">22</span>
-                                    <span className="text-sm text-muted-foreground">
-                                        Uber casa
-                                    </span>
-                                </div>
-                                <div className="text-right">
-                                    <span className="block font-medium">
-                                        BRL30.00
-                                    </span>
-                                    <span className="text-sm text-muted-foreground">
-                                        Emerson S. pagou
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </main>
-                <aside className="w-64 p-4 hidden sm:block">
-                    <div className="mb-4">
-                        <h2 className="text-lg font-bold">Seu saldo total</h2>
-                        <p className="text-3xl font-bold text-primary">
-                            devem a você BRL261.18
+                            {totalBalance >= 0 ? "+" : "-"}R${" "}
+                            {Math.abs(totalBalance).toFixed(2)}
                         </p>
-                    </div>
-                </aside>
-            </div>
-            <footer className="border-t-[1px] p-4 flex justify-between items-center">
-                <div>&copy; 2024 Partilha. All rights reserved.</div>
-                <nav className="flex gap-4">
-                    <Link href="#" className="hover:underline" prefetch={false}>
-                        Privacy
-                    </Link>
-                    <Link href="#" className="hover:underline" prefetch={false}>
-                        Terms
-                    </Link>
-                    <Link href="#" className="hover:underline" prefetch={false}>
-                        Contact
-                    </Link>
-                </nav>
-            </footer>
+                        <p className="text-sm text-gray-500 mt-1">
+                            {totalBalance >= 0 ? "Você receberá" : "Você deve"}
+                        </p>
+                    </CardContent>
+                </Card>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Grupos</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ScrollArea className="h-[300px]">
+                                {groups.map((group) => (
+                                    <div
+                                        key={group.id}
+                                        className="flex justify-between items-center py-3 border-b last:border-b-0"
+                                    >
+                                        <div>
+                                            <p className="font-medium">
+                                                {group.name}
+                                            </p>
+                                            <p className="text-sm text-gray-500">
+                                                {group.members} membros
+                                            </p>
+                                        </div>
+                                        <p
+                                            className={`font-semibold ${
+                                                group.balance >= 0
+                                                    ? "text-green-600"
+                                                    : "text-red-600"
+                                            }`}
+                                        >
+                                            {group.balance >= 0 ? "+" : "-"}R${" "}
+                                            {Math.abs(group.balance).toFixed(2)}
+                                        </p>
+                                    </div>
+                                ))}
+                            </ScrollArea>
+                            <Link href="/groups" passHref>
+                                <Button
+                                    variant="outline"
+                                    className="w-full mt-4"
+                                >
+                                    Ver mais{" "}
+                                    <ChevronRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </Link>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Contatos</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ScrollArea className="h-[300px]">
+                                {contacts.map((contact) => (
+                                    <div
+                                        key={contact.id}
+                                        className="flex justify-between items-center py-3 border-b last:border-b-0"
+                                    >
+                                        <div className="flex items-center">
+                                            <Avatar className="h-8 w-8 mr-2">
+                                                <AvatarFallback>
+                                                    {contact.name[0]}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <p className="font-medium">
+                                                {contact.name}
+                                            </p>
+                                        </div>
+                                        <p
+                                            className={`font-semibold ${
+                                                contact.balance >= 0
+                                                    ? "text-green-600"
+                                                    : "text-red-600"
+                                            }`}
+                                        >
+                                            {contact.balance >= 0 ? "+" : "-"}R${" "}
+                                            {Math.abs(contact.balance).toFixed(
+                                                2
+                                            )}
+                                        </p>
+                                    </div>
+                                ))}
+                            </ScrollArea>
+                            <Link href="/contacts" passHref>
+                                <Button
+                                    variant="outline"
+                                    className="w-full mt-4"
+                                >
+                                    Ver mais{" "}
+                                    <ChevronRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </Link>
+                        </CardContent>
+                    </Card>
+                </div>
+            </main>
+
+            <Button
+                className="fixed bottom-8 right-8 rounded-full shadow-lg"
+                size="lg"
+            >
+                <PlusCircle className="mr-2 h-4 w-4" /> Nova Despesa
+            </Button>
         </div>
     );
 }
