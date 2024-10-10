@@ -1,33 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-    ChevronRight,
-    HandshakeIcon,
-    LogOut,
-    PlusCircle,
-    Settings,
-    User,
-} from "lucide-react";
-import useFirebaseUser from "@/hooks/firebase/use-firebase-user";
-import useLogout from "@/hooks/firebase/use-logout";
+import { ChevronRight, PlusCircle } from "lucide-react";
 import Link from "next/link";
+import AddTransactionModal from "@/components/add-transaction-modal";
 
 export default function Dashboard() {
-    const { user } = useFirebaseUser();
-    const { logout, loading } = useLogout();
+    const [open, setOpen] = useState(false);
     const [totalBalance, setTotalBalance] = useState(150.75);
     const [groups, setGroups] = useState([
         { id: 1, name: "Apartamento", balance: 75.5, members: 3 },
@@ -41,72 +24,7 @@ export default function Dashboard() {
     ]);
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <header className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                    <Link
-                        href="#"
-                        className="flex items-center justify-center space-x-2"
-                        prefetch={false}
-                    >
-                        <HandshakeIcon className="h-6 w-6 hover:animate-bounce" />
-                        <span className="text-2xl font-black">Partilha</span>
-                    </Link>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                className="relative h-8 w-8 rounded-full"
-                            >
-                                <Avatar className="h-8 w-8">
-                                    <AvatarImage
-                                        src={
-                                            user?.photoURL ||
-                                            "/placeholder-user.jpg"
-                                        }
-                                        alt="@user"
-                                    />
-                                    <AvatarFallback>U</AvatarFallback>
-                                </Avatar>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            className="w-56"
-                            align="end"
-                            forceMount
-                        >
-                            <DropdownMenuLabel className="font-normal">
-                                <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none">
-                                        {user?.displayName}
-                                    </p>
-                                    <p className="text-xs leading-none text-muted-foreground">
-                                        {user?.email}
-                                    </p>
-                                </div>
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                <User className="mr-2 h-4 w-4" />
-                                <span>Perfil</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Settings className="mr-2 h-4 w-4" />
-                                <span>Configurações</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => logout()}
-                            >
-                                <LogOut className="mr-2 h-4 w-4" />
-                                <span>Sair</span>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </header>
-
+        <>
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <Card className="mb-8">
                     <CardHeader>
@@ -227,9 +145,11 @@ export default function Dashboard() {
             <Button
                 className="fixed bottom-8 right-8 rounded-full shadow-lg"
                 size="lg"
+                onClick={() => setOpen(true)}
             >
                 <PlusCircle className="mr-2 h-4 w-4" /> Nova Despesa
             </Button>
-        </div>
+            <AddTransactionModal open={open} onOpenChange={setOpen} />
+        </>
     );
 }
